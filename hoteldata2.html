@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<!-- 單純取資料 -->
+<!-- 取資料後呈現畫面 -->
 
 <head>
     <meta charset="utf-8">
@@ -28,18 +28,26 @@
             });
         });
         function showdata(data) {
-            var output = $("#output");
+            data.forEach(function (item, key){
+                var strHTML = '<li class="list-group-item border border-4 border-danger shadow shadow-lg mt-3"><div class="h3">旅館名稱: '+ item.name +'</div><h5>住址: '+ item.display_addr +'</h5><h5>電話: '+ item.tel +'</h5><button class="btn btn-success w-100">map</button></li>';
+                $("#content").append(strHTML);
+            });
 
-            for (var i = 0; i < data.length; i++) {
-                var hotel = $("<div>");
-                hotel.append("<b>資料#" + (i + 1) + ": </b></br>");
-                hotel.append("<p>旅館名稱: " + data[i].name + "</p>");
-
-                output.append(hotel);
-            }
+            // for (var i = 0; i < data.length; i++) {
+            //     var strHTML = '';
+            //     hotel_name.append(data[i].name);
+            //     hotel_addr.append(data[i].display_addr);
+            //     hotel_tel.append(data[i].tel);
+            // }
         }
     </script>
-    <div id="output"></div>
+<div id="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 pt-5">
+            <ul class="list-group" id="content"></ul>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
