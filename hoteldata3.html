@@ -5,9 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Taipei Hotel Data</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Taipei Hotel Data V.3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
 <body>
@@ -17,64 +16,105 @@
         crossorigin="anonymous"></script>
     <script>
         $(function () {
-            $.ajax({
-                type: "GET",
-                url: "https://sigma945.000webhostapp.com/web202403/hoteldata_api.php",
-                dataType: "json",
-                success: showdata,
-                error: function () {
-                    alert("error-https://sigma945.000webhostapp.com/web202403/hoteldata_api.php");
-                }
+            $("#itemsPerPageSelect").change(function () {
+                //console.log($(this).val());
+                numOfPage = ($(this).val());
+
+                $.ajax({
+                    type: "GET",
+                    url: "https://sigma945.000webhostapp.com/web202403/hoteldata_api.php",
+                    dataType: "json",
+                    async: false,   //關閉非同步 才能讓資料先進來去做監聽
+                    success: showdata,
+                    error: function () {
+                        alert("error-https://sigma945.000webhostapp.com/web202403/hoteldata_api.php");
+                    }
+                });
+
+                // 頁碼監聽 click
+                $("#pageNum #mypage").click(function (event) {
+                    event.preventDefault();     // 強制不跳轉
+                    var page = $(this).data("id");
+                    // console.log(page);
+                    drawView(page);
+
+                    // 判斷換頁按鈕是否出現
+                    if (page == 0) {
+                        $("#prePage").addClass('d-none');
+                    } else if (page == newdata.length - 1) {
+                        $("#nextPage").addClass('d-none');
+                    } else {
+                        $("#prePage").removeClass('d-none');
+                        $("#nextPage").removeClass('d-none');
+                    }
+                });
             });
         });
+
+        var newdata = [];
+        var numOfPage = 20;
         function showdata(data) {
-            var newdata = [];
+            newdata = [];
             // 資料結構重構
-            data.forEach(function (item, key){
-                var strHTML = '<li class="list-group-item border border-4 border-danger shadow shadow-lg mt-3"><div class="h3">旅館名稱: '+ item.name +'</div><h5>住址: '+ item.display_addr +'</h5><h5>電話: '+ item.tel +'</h5><button class="btn btn-success w-100">map</button></li>';
-                $("#content").append(strHTML);
-                if(key % 10 == 0){
+            data.forEach(function (item, key) {
+                if (key % numOfPage == 0) {
                     newdata.push([]);
                 }
 
-                var page = parseInt(key/10) ;
+                var page = parseInt(key / numOfPage);
                 newdata[page].push(item);
             });
-            console.log(newdata);
 
-            // for (var i = 0; i < data.length; i++) {
-            //     var strHTML = '';
-            //     hotel_name.append(data[i].name);
-            //     hotel_addr.append(data[i].display_addr);
-            //     hotel_tel.append(data[i].tel);
-            // }
+            drawView(0);
+
+            // 產生頁碼
+            $("#pageNum").empty();
+
+            // 上一頁按鈕
+            $("#pageNum").append(' <li class="page-item" id="prePage"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>');
+
+
+            newdata.forEach(function (item, key) {
+                var page = key + 1;
+                var strHTML = '<li class="page-item" data-id="' + key + '" id="mypage"><a class="page-link" href="#">' + page + '</a></li>';
+                $("#pageNum").append(strHTML);
+            });
+
+            // 下一頁按鈕
+            $("#pageNum").append('<li class="page-item" id="nextPage"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>');
+
+        }
+
+        function drawView(page) {
+            $("#content").empty();
+            newdata[page].forEach(function (item, key) {
+                var strHTML = '<li class="list-group-item border border-3 border-danger shadow shadow-lg mt-4"><div class="h3">旅館名稱: ' + item.name + '</div><h5>住址: ' + item.display_addr + '</h5><h5>電話: ' + item.tel + '</h5><button class="btn btn-success w-100">map</button></li>';
+                $("#content").append(strHTML);
+            });
         }
     </script>
-<div id="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8 pt-5">
-            <ul class="list-group" id="content"></ul>
+    <div id="container">
+        <div class="row justify-content-center">
+            <div class="pt-4 justify-content-around">
+                <select class="form-select shadow-lg" id="itemsPerPageSelect">
+                    <option selected>選擇一頁要顯示幾筆資料</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+
+            <div class="col-md-8 pt-5">
+                <ul class="list-group" id="content"></ul>
+            </div>
+
+            <div class="mt-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center" id="pageNum"></ul>
+                </nav>
+            </div>
         </div>
     </div>
-
-    <div class="row mt-3 justify-content-center">
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-    </div>
-</div>
 </body>
 
 </html>
