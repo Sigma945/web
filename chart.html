@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!-- chart.JS test -->
 
 <head>
     <meta charset="UTF-8">
@@ -23,7 +24,7 @@
         const ctx = document.getElementById('myChart');
 
         var chart = new Chart(ctx, {
-            type: 'bar',
+            type: 'bar',    //line(折線圖), pie(圓餅圖)
             data: {
                 labels: ['台中', '台北', 'Yellow', 'Green', 'Purple', 'Orange'],
                 datasets: [{

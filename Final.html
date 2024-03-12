@@ -13,7 +13,7 @@
 <body>
     <div class="container-fluid">
         <div class="row vh-100">
-            <div class="col-md-3 bg-danger">
+            <div class="col-md-3 bg-primary">
                 <select class="form-select mt-3 form-select-lg" id="city"></select>
                 <ul class="list-group pt-3" id="list"></ul>
             </div>
@@ -45,11 +45,11 @@
         // chartjs
         const ctx = document.getElementById('myChart');
         var chart = new Chart(ctx, {
-            type: 'bar',    //line(折線圖), pie(圓餅圖)
+            type: 'bar', 
             data: {
                 labels: [],
                 datasets: [{
-                    label: '# of Votes',
+                    label: '各區域旅館分布統計',
                     data: [],
                     borderWidth: 1
                 }]
